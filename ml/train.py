@@ -30,7 +30,7 @@ if torch.cuda.is_available():
 # --------------------------------------------------
 
 BATCH_SIZE = 64
-EPOCHS = 2
+EPOCHS = 10
 LEARNING_RATE = 0.001
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
