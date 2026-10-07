@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 
 from backend.app.predictor import predict_image
@@ -8,6 +9,18 @@ app = FastAPI(
     title="AI Image Detector API",
     description="API for detecting whether an image is real or AI-generated.",
     version="1.0.0",
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
