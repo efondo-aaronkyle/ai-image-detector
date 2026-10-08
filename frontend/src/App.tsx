@@ -1,5 +1,7 @@
 import { ChangeEvent, DragEvent, useEffect, useState } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 type PredictionResponse = {
   filename: string;
   prediction: "REAL" | "FAKE";
@@ -30,9 +32,7 @@ function App() {
   useEffect(() => {
     const fetchModelInfo = async () => {
       try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/model-info"
-        );
+        const response = await fetch(`${API_URL}/api/model-info`);
 
         if (!response.ok) {
           throw new Error("Failed to load model information.");
@@ -88,7 +88,7 @@ function App() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/predict", {
+      const response = await fetch(`${API_URL}/api/predict`, {
         method: "POST",
         body: formData,
       });
