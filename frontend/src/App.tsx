@@ -1,4 +1,4 @@
-import { ChangeEvent, DragEvent, useState } from "react";
+import { ChangeEvent, DragEvent, useEffect, useState } from "react";
 import "./App.css";
 
 type PredictionResponse = {
@@ -9,13 +9,45 @@ type PredictionResponse = {
   real_probability: number;
 };
 
+type ModelInfo = {
+  model: string;
+  dataset: string;
+  input_size: string;
+  classes: string[];
+  test_accuracy: number;
+  test_f1: number;
+  test_roc_auc: number;
+};
+
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [result, setResult] = useState<PredictionResponse | null>(null);
+  const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchModelInfo = async () => {
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/model-info"
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to load model information.");
+        }
+
+        const data: ModelInfo = await response.json();
+        setModelInfo(data);
+      } catch {
+        setModelInfo(null);
+      }
+    };
+
+    fetchModelInfo();
+  }, []);
 
   const selectFile = (selectedFile: File | null) => {
     if (!selectedFile) {
@@ -214,6 +246,45 @@ function App() {
             </section>
           )}
         </section>
+
+        {modelInfo && (
+          <section className="model-card">
+            <div className="model-card-header">
+              <div>
+                <span className="model-label">Detection Model</span>
+                <h2>{modelInfo.model}</h2>
+              </div>
+
+              <span className="status-badge">ONLINE</span>
+            </div>
+
+            <div className="model-grid">
+              <div>
+                <span>Dataset</span>
+                <strong>{modelInfo.dataset}</strong>
+              </div>
+
+              <div>
+                <span>Input</span>
+                <strong>{modelInfo.input_size}</strong>
+              </div>
+
+              <div>
+                <span>Test Accuracy</span>
+                <strong>
+                  {(modelInfo.test_accuracy * 100).toFixed(2)}%
+                </strong>
+              </div>
+
+              <div>
+                <span>ROC-AUC</span>
+                <strong>
+                  {(modelInfo.test_roc_auc * 100).toFixed(2)}%
+                </strong>
+              </div>
+            </div>
+          </section>
+        )}
 
         <footer>
           <p>
