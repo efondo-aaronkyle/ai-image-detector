@@ -32,6 +32,19 @@ def health_check():
     }
 
 
+@app.get("/api/model-info")
+def model_info():
+    return {
+        "model": "Improved CNN",
+        "dataset": "CIFAKE",
+        "input_size": "32x32 RGB",
+        "classes": ["REAL", "FAKE"],
+        "test_accuracy": 0.9605,
+        "test_f1": 0.9605,
+        "test_roc_auc": 0.9933,
+    }
+
+
 @app.post("/api/predict")
 async def predict(file: UploadFile = File(...)):
     image = Image.open(file.file)
